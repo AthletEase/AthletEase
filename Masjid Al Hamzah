@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masjid Al Hamzah - Prayer Times</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #0a5c36;
+            --secondary: #7cfc00;
+            --accent: #0c7c42;
+            --light: #f8fff2;
+            --dark: #063320;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .mosque-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(124, 252, 0, 0.5);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--secondary), #b0ff5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .date-display {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .current-time {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 1.5rem;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 252, 0, 0.1);
+        }
+        
+        .highlight {
+            color: var(--secondary);
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(124, 252, 0, 0.3);
+        }
+        
+        .prayer-times {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .prayer-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(124, 252, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prayer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+        }
+        
+        .prayer-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(124, 252, 0, 0.3);
+        }
+        
+        .prayer-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .prayer-name {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .time-display {
+            font-size: 2rem;
+            margin: 15px 0;
+            font-weight: 700;
+            color: var(--light);
+        }
+        
+        .azaan-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 15px;
+            color: #c8e6a9;
+        }
+        
+        .next-prayer {
+            text-align: center;
+            margin: 40px 0;
+            padding: 25px;
+            background: rgba(124, 252, 0, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(124, 252, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .next-prayer h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .next-prayer-info {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 20px;
+            font-size: 1rem;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-text {
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124, 252, 0, 0.1) 0%, rgba(124, 252, 0, 0) 70%);
+            z-index: -1;
+        }
+        
+        .decoration-1 {
+            top: -100px;
+            right: -100px;
+        }
+        
+        .decoration-2 {
+            bottom: -100px;
+            left: -100px;
+            width: 150px;
+            height: 150px;
+        }
+        
+        .info-note {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #c8e6a9;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .prayer-times {
+                grid-template-columns: 1fr;
+            }
+            
+            .prayer-card {
+                padding: 25px 20px;
+            }
+            
+            .time-display {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .current-time {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="decoration decoration-1"></div>
+            <div class="decoration decoration-2"></div>
+            <div class="mosque-icon">
+                <i class="fas fa-mosque"></i>
+            </div>
+            <h1>Masjid Al Hamzah</h1>
+            <div class="subtitle">Daily Prayer Times & Jamaat Schedule</div>
+            <div class="date-display" id="current-date">Loading date...</div>
+        </header>
+        
+        <div class="current-time">
+            <i class="far fa-clock"></i> الحمزہ مسجد Clock: <span id="current-time" class="highlight">Loading...</span>
+        </div>
+        
+        <div class="next-prayer">
+            <h2>Upcoming Jama'at</h2>
+            <div class="next-prayer-info" id="next-prayer">Calculating...</div>
+        </div>
+       
+        <div class="prayer-times">
+            <!-- Fajr -->
+            <div class="prayer-card">
+                <div class="prayer-name">🌄</div>
+                <div class="prayer-name">FAJR - فجر</div>
+                <div class="time-display" id="fajr-jamaat">6:15 AM</div>
+                <div class="azaan-label">Azaan - <span id="fajr-azaan">5:35 AM</span></div>
+            </div>
+            
+            <!-- Zuhr -->
+            <div class="prayer-card">
+                <div class="prayer-name">☀️</div>
+                <div class="prayer-name">ZUHAR - ظہر</div>
+                <div class="time-display" id="zuhr-jamaat">1:00 PM</div>
+                <div class="azaan-label">Azaan - <span id="zuhr-azaan">12:45 PM</span></div>
+            </div>
+            
+            <!-- Asr -->
+            <div class="prayer-card">
+                <div class="prayer-name">🌅</div>
+                <div class="prayer-name">ASAR - عصر</div>
+                <div class="time-display" id="asr-jamaat">4:15 PM</div>
+                <div class="azaan-label">Azaan - <span id="asr-azaan">4:00 PM</span></div>
+            </div>
+            
+            <!-- Maghrib -->
+            <div class="prayer-card">
+                <div class="prayer-name">🌙</div>
+                <div class="prayer-name">MAGHRIB - مغرب</div>
+                <div class="time-display" id="maghrib-jamaat">5:45 PM</div>
+                <div class="azaan-label">Azaan - <span id="maghrib-azaan">5:39 PM</span></div>
+            </div>
+            
+            <!-- Isha -->
+            <div class="prayer-card">
+                <div class="prayer-name">🌕</div>
+                <div class="prayer-name">ISHA - عشاء</div>
+                <div class="time-display" id="isha-jamaat">7:20 PM</div>
+                <div class="azaan-label">Azaan - <span id="isha-azaan">7:05 PM</span></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Masjid Al Hamzah &copy; <span id="current-year"></span></p>
+            <p class="footer-text">May Allah accept our prayers and grant us His blessings</p>
+            <p class="footer-text">Designed by ZARGAR ATEEB</p>
+        </footer>
+    </div>
+
+    <script>
+        // Prayer time offsets (minutes before Jamaat)
+        const prayerOffsets = {
+            'fajr': 44,
+            'zuhr': 15,
+            'asr': 15,
+            'maghrib': 6,
+            'isha': 15
+        };
+        
+        // Base Jamaat times (initial times)
+        const baseJamaatTimes = {
+            'fajr': '6:15 AM',
+            'zuhr': '1:00 PM',
+            'asr': '4:15 PM',
+            'maghrib': '5:48 PM',
+            'isha': '7:15 PM'
+        };
+        
+        // Function to convert time string to minutes since midnight
+        function timeToMinutes(timeStr) {
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            
+            if (modifier === 'PM' && hours !== 12) {
+                hours += 12;
+            }
+            if (modifier === 'AM' && hours === 12) {
+                hours = 0;
+            }
+            
+            return hours * 60 + minutes;
+        }
+        
+        // Function to convert minutes to time string
+        function minutesToTime(minutes) {
+            let hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            const modifier = hours >= 12 ? 'PM' : 'AM';
+            
+            if (hours > 12) {
+                hours -= 12;
+            } else if (hours === 0) {
+                hours = 12;
+            }
+            
+            return `${hours}:${mins.toString().padStart(2, '0')} ${modifier}`;
+        }
+        
+        // Function to calculate Azaan time based on Jamaat time and offset
+        function calculateAzaanTime(jamaatTime, offsetMinutes) {
+            const jamaatMinutes = timeToMinutes(jamaatTime);
+            const azaanMinutes = jamaatMinutes - offsetMinutes;
+            
+            // Handle case where azaan time crosses midnight
+            if (azaanMinutes < 0) {
+                return minutesToTime(azaanMinutes + 24 * 60);
+            }
+            
+            return minutesToTime(azaanMinutes);
+        }
+        
+        // Function to get dynamic Fajr time based on days passed
+        function getDynamicFajrTime() {
+            // Set the initial date when the time was 6:15 AM
+            const initialDate = new Date('2025-11-05');
+            const today = new Date();
+            
+            // Calculate days difference
+            const timeDiff = today.getTime() - initialDate.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+            
+            // Calculate new Fajr time (increase by 5 minutes every 5 days)
+            const baseFajrMinutes = timeToMinutes(baseJamaatTimes.fajr);
+            const fiveDayIncrements = Math.floor(daysDiff / 5);
+            const newFajrMinutes = baseFajrMinutes + (fiveDayIncrements * 5);
+            
+            // Handle case where time goes above 24 hours
+            if (newFajrMinutes >= 24 * 60) {
+                return minutesToTime(newFajrMinutes - 24 * 60);
+            }
+            
+            return minutesToTime(newFajrMinutes);
+        }
+        
+        // Function to get dynamic Maghrib time based on days passed
+        function getDynamicMaghribTime() {
+            // Set the initial date when the time was 5:45 PM
+            const initialDate = new Date('2025-11-05');
+            const today = new Date();
+            
+            // Calculate days difference
+            const timeDiff = today.getTime() - initialDate.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+            
+            // Calculate new Maghrib time (decrease by 1 minute per day)
+            const baseMaghribMinutes = timeToMinutes(baseJamaatTimes.maghrib);
+            const newMaghribMinutes = baseMaghribMinutes - daysDiff;
+            
+            // Handle case where time goes below 0
+            if (newMaghribMinutes < 0) {
+                return minutesToTime(newMaghribMinutes + 24 * 60);
+            }
+            
+            return minutesToTime(newMaghribMinutes);
+        }
+        
+        // Function to update all Azaan times
+        function updateAzaanTimes() {
+            const jamaatTimes = {...baseJamaatTimes};
+            jamaatTimes.fajr = getDynamicFajrTime();
+            jamaatTimes.maghrib = getDynamicMaghribTime();
+            
+            for (const prayer in jamaatTimes) {
+                const jamaatTime = jamaatTimes[prayer];
+                const offset = prayerOffsets[prayer];
+                const azaanTime = calculateAzaanTime(jamaatTime, offset);
+                
+                document.getElementById(`${prayer}-azaan`).textContent = azaanTime;
+                document.getElementById(`${prayer}-jamaat`).textContent = jamaatTime;
+            }
+            
+            return jamaatTimes;
+        }
+        
+        // Function to update current date and time
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Update current date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Update current time
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Update current year in footer
+            document.getElementById('current-year').textContent = now.getFullYear();
+            
+            return now;
+        }
+        
+        // Function to calculate next prayer
+        function updateNextPrayer(now, jamaatTimes) {
+            const currentTime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const currentMinutes = timeToMinutes(currentTime);
+            
+            let nextPrayer = null;
+            let minDiff = 24 * 60; // Initialize with max value (24 hours in minutes)
+            
+            for (const prayer in jamaatTimes) {
+                const prayerTime = jamaatTimes[prayer];
+                const prayerMinutes = timeToMinutes(prayerTime);
+                
+                let diff = prayerMinutes - currentMinutes;
+                if (diff < 0) {
+                    diff += 24 * 60; // Add 24 hours if prayer time has passed for today
+                }
+                
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    nextPrayer = prayer;
+                }
+            }
+            
+ 3           if (nextPrayer) {
+                const formattedPrayerName = nextPrayer.charAt(0).toUpperCase() + nextPrayer.slice(1);
+                const nextPrayerTime = jamaatTimes[nextPrayer];
+                
+                // Calculate time remaining
+                const hoursRemaining = Math.floor(minDiff / 60);
+                const minutesRemaining = minDiff % 60;
+                
+                let timeRemainingText = "";
+                if (hoursRemaining > 0) {
+                    timeRemainingText = `${hoursRemaining}h ${minutesRemaining}m`;
+                } else {
+                    timeRemainingText = `${minutesRemaining}m`;
+                }
+                
+                document.getElementById('next-prayer').innerHTML = 
+                    `${formattedPrayerName} at ${nextPrayerTime} <br><span style="font-size: 1.2rem; color: #7cfc00;">(${timeRemainingText} remaining)</span>`;
+            }
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update prayer times
+            const jamaatTimes = updateAzaanTimes();
+            
+            // Update date and time
+            const now = updateDateTime();
+            
+            // Update next prayer
+            updateNextPrayer(now, jamaatTimes);
+            
+            // Update current time every second
+            setInterval(function() {
+                const now = updateDateTime();
+                updateNextPrayer(now, jamaatTimes);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
